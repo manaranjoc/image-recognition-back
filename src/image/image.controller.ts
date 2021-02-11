@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   HttpCode,
+  ParseIntPipe,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -21,8 +22,9 @@ export class ImageController {
     @Body() configImage: ImageRequestDto,
     @UploadedFile() image,
   ): string {
-    console.log(image);
-    console.log(configImage.MaxLabels);
-    return this.appService.getHello();
+    return this.appService.getLabels({
+      Image: { Bytes: image.buffer },
+      ...configImage,
+    });
   }
 }

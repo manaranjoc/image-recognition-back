@@ -1,4 +1,4 @@
 export class ImageRequestDto {
-  MaxLabels: number;
-  MinConfidence: number;
+  MaxLabels?: number = 5;
+  MinConfidence?: number = 80;
 }
