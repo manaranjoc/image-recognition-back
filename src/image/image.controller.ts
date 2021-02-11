@@ -10,6 +10,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageService } from './image.service';
 import { ImageRequestDto } from './dto/image-request.dto';
+import { ImageResponseDto } from './dto/image-response.dto';
 
 @Controller('api/v1/images')
 export class ImageController {
@@ -18,11 +19,11 @@ export class ImageController {
   @Post()
   @HttpCode(200)
   @UseInterceptors(FileInterceptor('image'))
-  getLabels(
+  async getLabels(
     @Body() configImage: ImageRequestDto,
     @UploadedFile() image,
-  ): string {
-    return this.appService.getLabels({
+  ): Promise<ImageResponseDto[]> {
+    return await this.appService.getLabels({
       Image: { Bytes: image.buffer },
       ...configImage,
     });

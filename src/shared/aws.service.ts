@@ -18,11 +18,7 @@ export class AwsService {
   async labelImage(params: DetectLabelsRequest) {
     const detectLabelsCommand = new DetectLabelsCommand(params);
 
-    try {
-      const labels = await this.awsRekognition.send(detectLabelsCommand);
-      console.log(labels);
-    } catch (error) {
-      console.error(error);
-    }
+    const response = await this.awsRekognition.send(detectLabelsCommand);
+    return response.Labels;
   }
 }
