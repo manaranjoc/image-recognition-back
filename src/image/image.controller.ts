@@ -1,4 +1,12 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageService } from './image.service';
 import { ImageRequestDto } from './dto/image-request.dto';
 
@@ -8,8 +16,13 @@ export class ImageController {
 
   @Post()
   @HttpCode(200)
-  getLabels(@Body() imageRequest: ImageRequestDto): string {
-    console.log(imageRequest);
+  @UseInterceptors(FileInterceptor('image'))
+  getLabels(
+    @Body() configImage: ImageRequestDto,
+    @UploadedFile() image,
+  ): string {
+    console.log(image);
+    console.log(configImage.MaxLabels);
     return this.appService.getHello();
   }
 }
