@@ -1,8 +1,8 @@
 import {
   Body,
   Controller,
+  Header,
   HttpCode,
-  ParseIntPipe,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -27,5 +27,11 @@ export class ImageController {
       Image: { Bytes: image.buffer },
       ...configImage,
     });
+  }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadImage(@UploadedFile() image) {
+    await this.appService.saveImage(image);
   }
 }

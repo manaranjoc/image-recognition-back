@@ -12,4 +12,9 @@ export class ImageService {
     params.MinConfidence = Number(params.MinConfidence);
     return <ImageResponseDto[]>await this.awsService.labelImage(params);
   }
+
+  async saveImage(image) {
+    const location = `images/${image.originalname}`;
+    await this.awsService.saveFile(location, image.buffer);
+  }
 }
