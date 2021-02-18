@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   HttpCode,
-  ParseIntPipe,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -11,6 +10,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageService } from './image.service';
 import { ImageRequestDto } from './dto/image-request.dto';
 import { ImageResponseDto } from './dto/image-response.dto';
+import { ManifestRequestDto } from './dto/manifest-request.dto';
 
 @Controller('api/v1/images')
 export class ImageController {
@@ -27,5 +27,16 @@ export class ImageController {
       Image: { Bytes: image.buffer },
       ...configImage,
     });
+  }
+
+  @Post('upload-image')
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadImage(@UploadedFile() image) {
+    await this.appService.saveImage(image);
+  }
+
+  @Post('upload-manifest')
+  async uploadManifest(@Body() manifest: ManifestRequestDto) {
+    await this.appService.saveManifest(manifest);
   }
 }
