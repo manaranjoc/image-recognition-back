@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   Post,
   UploadedFile,
@@ -38,5 +39,10 @@ export class ImageController {
   @Post('upload-manifest')
   async uploadManifest(@Body() manifest: ManifestRequestDto) {
     await this.appService.saveManifest(manifest);
+  }
+
+  @Get('models')
+  async fetchModels() {
+    return await this.appService.fetchModels();
   }
 }

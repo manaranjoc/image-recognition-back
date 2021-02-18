@@ -1,12 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
 import {
-  RekognitionClient,
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import {
+  CreateProjectVersionCommand,
+  CreateProjectVersionRequest,
+  DescribeProjectVersionsCommand,
   DetectLabelsCommand,
   DetectLabelsRequest,
-  CreateProjectVersionRequest,
-  CreateProjectVersionCommand,
+  RekognitionClient,
 } from '@aws-sdk/client-rekognition';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 @Injectable()
 export class AwsService {
@@ -46,6 +51,23 @@ export class AwsService {
   }
 
   async createModel(request: CreateProjectVersionRequest) {
-    const createCommand = new CreateProjectVersionCommand(request);
+    try {
+      const createCommand = new CreateProjectVersionCommand(request);
+      this.awsS3.send(createCommand);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async fetchModels() {
+    try {
+      const fetchModels = new DescribeProjectVersionsCommand({
+        ProjectArn: process.env.AWS_REKOGNITION_PROJECT,
+      });
+      return await this.awsS3.send(fetchModels);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 }

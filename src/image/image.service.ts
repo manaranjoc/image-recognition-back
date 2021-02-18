@@ -55,5 +55,12 @@ export class ImageService {
       },
       TestingData: { AutoCreate: true },
     };
+
+    const projectResult = await this.awsService.createModel(project);
+    console.log(projectResult);
+  }
+
+  async fetchModels() {
+    return await this.awsService.fetchModels();
   }
 }
