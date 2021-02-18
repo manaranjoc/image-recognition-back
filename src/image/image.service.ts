@@ -20,17 +20,21 @@ export class ImageService {
     await this.awsService.saveFile(location, image.buffer);
   }
 
-  async saveManifest(manifest: ManifestRequestDto) {
-    const manifestName = manifest['bounding-box-metadata']['job-name'].replace(
-      /\s/g,
-      '',
-    );
-    manifest['source-ref'] = manifest['source-ref'].replace(
-      /BUCKET/,
-      process.env.AWS_REKOGNITION_BUCKET,
-    );
+  async saveManifest(manifests: ManifestRequestDto[]) {
+    const manifestName = manifests[0]['bounding-box-metadata'][
+      'job-name'
+    ].replace(/\s/g, '');
     const location = `manifest/${manifestName}.manifest`;
-    await this.awsService.saveFile(location, JSON.stringify(manifest));
+
+    const manifestFile = manifests.map((manifest) => {
+      manifest['source-ref'] = manifest['source-ref'].replace(
+        /BUCKET/,
+        process.env.AWS_REKOGNITION_BUCKET,
+      );
+      return JSON.stringify(manifest);
+    });
+
+    await this.awsService.saveFile(location, manifestFile.join('/n'));
   }
 
   async createModel(projectName, manifestLocation) {

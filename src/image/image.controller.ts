@@ -37,8 +37,8 @@ export class ImageController {
   }
 
   @Post('upload-manifest')
-  async uploadManifest(@Body() manifest: ManifestRequestDto) {
-    await this.appService.saveManifest(manifest);
+  async uploadManifest(@Body() manifests: ManifestRequestDto[]) {
+    await this.appService.saveManifest(manifests);
   }
 
   @Get('models')
