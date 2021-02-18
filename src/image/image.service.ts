@@ -24,6 +24,10 @@ export class ImageService {
       /\s/g,
       '',
     );
+    manifest['source-ref'] = manifest['source-ref'].replace(
+      /BUCKET/,
+      process.env.AWS_REKOGNITION_BUCKET,
+    );
     const location = `manifest/${manifestName}.manifest`;
     await this.awsService.saveFile(location, JSON.stringify(manifest));
   }
