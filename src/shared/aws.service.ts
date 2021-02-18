@@ -3,6 +3,8 @@ import {
   RekognitionClient,
   DetectLabelsCommand,
   DetectLabelsRequest,
+  CreateProjectVersionRequest,
+  CreateProjectVersionCommand,
 } from '@aws-sdk/client-rekognition';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
@@ -41,5 +43,9 @@ export class AwsService {
       console.log(error);
       throw new BadRequestException();
     }
+  }
+
+  async createModel(request: CreateProjectVersionRequest) {
+    const createCommand = new CreateProjectVersionCommand(request);
   }
 }

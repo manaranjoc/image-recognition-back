@@ -3,6 +3,7 @@ import { AwsService } from '../shared/aws.service';
 import { ImageLabelCommand } from './dto/image-label.command';
 import { ImageResponseDto } from './dto/image-response.dto';
 import { ManifestRequestDto } from './dto/manifest-request.dto';
+import { CreateProjectVersionRequest } from '@aws-sdk/client-rekognition';
 
 @Injectable()
 export class ImageService {
@@ -30,5 +31,29 @@ export class ImageService {
     );
     const location = `manifest/${manifestName}.manifest`;
     await this.awsService.saveFile(location, JSON.stringify(manifest));
+  }
+
+  async createModel(projectName, manifestLocation) {
+    const project: CreateProjectVersionRequest = {
+      ProjectArn: process.env.AWS_REKOGNITION_PROJECT,
+      VersionName: projectName,
+      OutputConfig: {
+        S3Bucket: process.env.AWS_REKOGNITION_MODELS,
+        S3KeyPrefix: 'models',
+      },
+      TrainingData: {
+        Assets: [
+          {
+            GroundTruthManifest: {
+              S3Object: {
+                Bucket: process.env.AWS_REKOGNITION_BUCKET,
+                Name: manifestLocation,
+              },
+            },
+          },
+        ],
+      },
+      TestingData: { AutoCreate: true },
+    };
   }
 }
