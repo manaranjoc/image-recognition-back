@@ -34,7 +34,11 @@ export class ImageService {
       return JSON.stringify(manifest);
     });
 
-    await this.awsService.saveFile(location, manifestFile.join('/n'));
+    await this.awsService.saveFile(location, manifestFile.join('\n'));
+    this.createModel(manifestName, location).then((result) => {
+      console.log(result);
+      console.log('Model Trained');
+    });
   }
 
   async createModel(projectName, manifestLocation) {
@@ -42,8 +46,8 @@ export class ImageService {
       ProjectArn: process.env.AWS_REKOGNITION_PROJECT,
       VersionName: projectName,
       OutputConfig: {
-        S3Bucket: process.env.AWS_REKOGNITION_MODELS,
-        S3KeyPrefix: 'models',
+        S3Bucket: process.env.AWS_REKOGNITION_BUCKET,
+        S3KeyPrefix: 'models-custom',
       },
       TrainingData: {
         Assets: [
@@ -60,8 +64,7 @@ export class ImageService {
       TestingData: { AutoCreate: true },
     };
 
-    const projectResult = await this.awsService.createModel(project);
-    console.log(projectResult);
+    return await this.awsService.createModel(project);
   }
 
   async fetchModels() {

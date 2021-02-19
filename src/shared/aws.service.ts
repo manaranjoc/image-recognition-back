@@ -4,8 +4,10 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import {
+  CreateProjectCommand,
   CreateProjectVersionCommand,
   CreateProjectVersionRequest,
+  DescribeProjectsCommand,
   DescribeProjectVersionsCommand,
   DetectLabelsCommand,
   DetectLabelsRequest,
@@ -53,7 +55,7 @@ export class AwsService {
   async createModel(request: CreateProjectVersionRequest) {
     try {
       const createCommand = new CreateProjectVersionCommand(request);
-      this.awsS3.send(createCommand);
+      this.awsRekognition.send(createCommand);
     } catch (error) {
       console.log(error);
     }
@@ -64,10 +66,15 @@ export class AwsService {
       const fetchModels = new DescribeProjectVersionsCommand({
         ProjectArn: process.env.AWS_REKOGNITION_PROJECT,
       });
-      return await this.awsS3.send(fetchModels);
+      return await this.awsRekognition.send(fetchModels);
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException();
     }
+  }
+
+  async describeProjects() {
+    const describe = new DescribeProjectsCommand({});
+    console.log(await this.awsRekognition.send(describe));
   }
 }
