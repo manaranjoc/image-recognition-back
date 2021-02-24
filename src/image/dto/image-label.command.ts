@@ -4,6 +4,10 @@ export class ImageLabelCommand {
   MinConfidence?: number;
 }
 
+export class ImageCustomLabelCommand extends ImageLabelCommand {
+  ProjectVersionArn: string;
+}
+
 class Image {
   Bytes: Buffer;
 }

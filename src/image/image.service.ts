@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { AwsService } from '../shared/aws.service';
-import { ImageLabelCommand } from './dto/image-label.command';
+import {
+  ImageCustomLabelCommand,
+  ImageLabelCommand,
+} from './dto/image-label.command';
 import { ImageResponseDto } from './dto/image-response.dto';
 import { ManifestRequestDto } from './dto/manifest-request.dto';
 import { CreateProjectVersionRequest } from '@aws-sdk/client-rekognition';
@@ -69,5 +72,23 @@ export class ImageService {
 
   async fetchModels() {
     return await this.awsService.fetchModels();
+  }
+
+  async startModel(projectArn: string): Promise<string> {
+    const startStatus = await this.awsService.startProject(projectArn);
+    return startStatus.Status;
+  }
+
+  async stopModel(projectArn: string): Promise<string> {
+    const stopStatus = await this.awsService.stopProject(projectArn);
+    return stopStatus.Status;
+  }
+
+  async getCustomLabels(
+    params: ImageCustomLabelCommand,
+  ): Promise<ImageResponseDto[]> {
+    params.MaxLabels = Number(params.MaxLabels);
+    params.MinConfidence = Number(params.MinConfidence);
+    return <ImageResponseDto[]>await this.awsService.labelCustom(params);
   }
 }

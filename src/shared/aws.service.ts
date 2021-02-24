@@ -9,9 +9,13 @@ import {
   CreateProjectVersionRequest,
   DescribeProjectsCommand,
   DescribeProjectVersionsCommand,
+  DetectCustomLabelsCommand,
+  DetectCustomLabelsRequest,
   DetectLabelsCommand,
   DetectLabelsRequest,
   RekognitionClient,
+  StartProjectVersionCommand,
+  StopProjectVersionCommand,
 } from '@aws-sdk/client-rekognition';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
@@ -76,5 +80,37 @@ export class AwsService {
   async describeProjects() {
     const describe = new DescribeProjectsCommand({});
     console.log(await this.awsRekognition.send(describe));
+  }
+
+  async startProject(projectArn: string) {
+    try {
+      const start = new StartProjectVersionCommand({
+        ProjectVersionArn: projectArn,
+        MinInferenceUnits: 1,
+      });
+      return await this.awsRekognition.send(start);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async stopProject(projectArn: string) {
+    try {
+      const start = new StopProjectVersionCommand({
+        ProjectVersionArn: projectArn,
+      });
+      return await this.awsRekognition.send(start);
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async labelCustom(params: DetectCustomLabelsRequest) {
+    const detectCustomLabelsCommand = new DetectCustomLabelsCommand(params);
+
+    const response = await this.awsRekognition.send(detectCustomLabelsCommand);
+    return response.CustomLabels;
   }
 }
